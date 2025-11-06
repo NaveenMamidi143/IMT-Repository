@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CategoryServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">InventoryMgtSystem</a> &gt; <a href="index.source.html" class="el_package">com.hcltech.InventoryMgtSystem.services.impl</a> &gt; <span class="el_source">CategoryServiceImpl.java</span></div><h1>CategoryServiceImpl.java</h1><pre class="source lang-java linenums">package com.hcltech.InventoryMgtSystem.services.impl;
+import com.hcltech.InventoryMgtSystem.dtos.CategoryDTO;
+import com.hcltech.InventoryMgtSystem.dtos.Response;
+import com.hcltech.InventoryMgtSystem.exceptions.NotFoundException;
+import com.hcltech.InventoryMgtSystem.models.Category;
+import com.hcltech.InventoryMgtSystem.repositories.CategoryRepository;
+import com.hcltech.InventoryMgtSystem.services.CategoryService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L19">@Slf4j</span>
+public class CategoryServiceImpl implements CategoryService {
+
+    private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
+
+
+    @Override
+    public Response createCategory(CategoryDTO categoryDTO) {
+
+<span class="fc" id="L29">        Category categoryToSave = modelMapper.map(categoryDTO, Category.class);</span>
+
+<span class="fc" id="L31">        categoryRepository.save(categoryToSave);</span>
+
+<span class="fc" id="L33">        return Response.builder()</span>
+<span class="fc" id="L34">                .status(200)</span>
+<span class="fc" id="L35">                .message(&quot;Category Saved Successfully&quot;)</span>
+<span class="fc" id="L36">                .build();</span>
+
+    }
+
+    @Override
+    public Response getAllCategories() {
+<span class="fc" id="L42">        List&lt;Category&gt; categories = categoryRepository.findAll(Sort.by(Sort.Direction.DESC, &quot;id&quot;));</span>
+
+<span class="fc" id="L44">        categories.forEach(category -&gt; category.setProducts(null));</span>
+
+<span class="fc" id="L46">        List&lt;CategoryDTO&gt; categoryDTOList = modelMapper.map(categories, new TypeToken&lt;List&lt;CategoryDTO&gt;&gt;() {</span>
+<span class="fc" id="L47">        }.getType());</span>
+
+<span class="fc" id="L49">        return Response.builder()</span>
+<span class="fc" id="L50">                .status(200)</span>
+<span class="fc" id="L51">                .message(&quot;success&quot;)</span>
+<span class="fc" id="L52">                .categories(categoryDTOList)</span>
+<span class="fc" id="L53">                .build();</span>
+    }
+
+    @Override
+    public Response getCategoryById(Long id) {
+
+<span class="fc" id="L59">        Category category = categoryRepository.findById(id)</span>
+<span class="fc" id="L60">                .orElseThrow(() -&gt; new NotFoundException(&quot;Category Not Found&quot;));</span>
+
+<span class="fc" id="L62">        CategoryDTO categoryDTO = modelMapper.map(category, CategoryDTO.class);</span>
+
+<span class="fc" id="L64">        return Response.builder()</span>
+<span class="fc" id="L65">                .status(200)</span>
+<span class="fc" id="L66">                .message(&quot;success&quot;)</span>
+<span class="fc" id="L67">                .category(categoryDTO)</span>
+<span class="fc" id="L68">                .build();</span>
+    }
+
+    @Override
+    public Response updateCategory(Long id, CategoryDTO categoryDTO) {
+
+<span class="fc" id="L74">        Category existingCategory = categoryRepository.findById(id)</span>
+<span class="fc" id="L75">                .orElseThrow(() -&gt; new NotFoundException(&quot;Category Not Found&quot;));</span>
+
+<span class="fc" id="L77">        existingCategory.setName(categoryDTO.getName());</span>
+
+<span class="fc" id="L79">        categoryRepository.save(existingCategory);</span>
+
+<span class="fc" id="L81">        return Response.builder()</span>
+<span class="fc" id="L82">                .status(200)</span>
+<span class="fc" id="L83">                .message(&quot;Category Was Successfully Updated&quot;)</span>
+<span class="fc" id="L84">                .build();</span>
+
+    }
+
+    @Override
+    public Response deleteCategory(Long id) {
+
+<span class="fc" id="L91">        categoryRepository.findById(id)</span>
+<span class="fc" id="L92">                .orElseThrow(() -&gt; new NotFoundException(&quot;Category Not Found&quot;));</span>
+
+<span class="fc" id="L94">        categoryRepository.deleteById(id);</span>
+
+<span class="fc" id="L96">        return Response.builder()</span>
+<span class="fc" id="L97">                .status(200)</span>
+<span class="fc" id="L98">                .message(&quot;Category Was Successfully Deleted&quot;)</span>
+<span class="fc" id="L99">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

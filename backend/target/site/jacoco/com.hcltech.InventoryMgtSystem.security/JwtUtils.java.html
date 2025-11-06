@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">InventoryMgtSystem</a> &gt; <a href="index.source.html" class="el_package">com.hcltech.InventoryMgtSystem.security</a> &gt; <span class="el_source">JwtUtils.java</span></div><h1>JwtUtils.java</h1><pre class="source lang-java linenums">package com.hcltech.InventoryMgtSystem.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.function.Function;
+
+@Service
+<span class="fc" id="L18">@Slf4j</span>
+<span class="fc" id="L19">public class JwtUtils {</span>
+    private static final long EXPIRATION_TIME_IN_MILLISEC = 1000L * 60L * 60L * 24L * 30L * 6L; //expires in 6 months in milleces
+    private SecretKey key;
+    @Value(&quot;${secreteJwtString}&quot;)
+    private String secreteJwtString;
+    @PostConstruct
+    private void init() {
+<span class="fc" id="L26">        byte[] keyByte = secreteJwtString.getBytes(StandardCharsets.UTF_8);</span>
+<span class="fc" id="L27">        this.key = new SecretKeySpec(keyByte, &quot;HmacSHA256&quot;);</span>
+<span class="fc" id="L28">    }</span>
+
+    public String generateToken(String email) {
+<span class="fc" id="L31">        return Jwts.builder()</span>
+<span class="fc" id="L32">                .subject(email)</span>
+<span class="fc" id="L33">                .issuedAt(new Date(System.currentTimeMillis()))</span>
+<span class="fc" id="L34">                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_IN_MILLISEC))</span>
+<span class="fc" id="L35">                .signWith(key)</span>
+<span class="fc" id="L36">                .compact();</span>
+    }
+
+    public String getUsernameFromToken(String token) {
+<span class="fc" id="L40">        return extractClaims(token, Claims::getSubject);</span>
+    }
+
+    private &lt;T&gt; T extractClaims(String token, Function&lt;Claims, T&gt; claimsTFunction) {
+<span class="fc" id="L44">        return claimsTFunction.apply(Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload());</span>
+    }
+
+    public boolean isTokeValid(String token, UserDetails userDetails) {
+<span class="fc" id="L48">        final String username = getUsernameFromToken(token);</span>
+<span class="pc bpc" id="L49" title="1 of 4 branches missed.">        return (username.equals(userDetails.getUsername()) &amp;&amp; !isTokeExpired(token));</span>
+    }
+
+    private boolean isTokeExpired(String token) {
+<span class="fc" id="L53">        return extractClaims(token, Claims::getExpiration).before(new Date());</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

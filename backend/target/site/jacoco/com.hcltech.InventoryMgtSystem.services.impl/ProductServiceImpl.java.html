@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">InventoryMgtSystem</a> &gt; <a href="index.source.html" class="el_package">com.hcltech.InventoryMgtSystem.services.impl</a> &gt; <span class="el_source">ProductServiceImpl.java</span></div><h1>ProductServiceImpl.java</h1><pre class="source lang-java linenums">package com.hcltech.InventoryMgtSystem.services.impl;
+import com.hcltech.InventoryMgtSystem.dtos.ProductDTO;
+import com.hcltech.InventoryMgtSystem.dtos.Response;
+import com.hcltech.InventoryMgtSystem.exceptions.NotFoundException;
+import com.hcltech.InventoryMgtSystem.models.Category;
+import com.hcltech.InventoryMgtSystem.models.Product;
+import com.hcltech.InventoryMgtSystem.repositories.CategoryRepository;
+import com.hcltech.InventoryMgtSystem.repositories.ProductRepository;
+import com.hcltech.InventoryMgtSystem.services.ProductService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L23">@Slf4j</span>
+public class ProductServiceImpl implements ProductService {
+    private final ProductRepository productRepository;
+    private final ModelMapper modelMapper;
+    private final CategoryRepository categoryRepository;
+<span class="fc" id="L28">    private static final String IMAGE_DIRECTORY = System.getProperty(&quot;user.dir&quot;) + &quot;/product-images/&quot;;</span>
+    //AFTER YOUR FRONTEND IS SETUP CHANGE THE IMAGE DIRECTORY TO YHE FRONTEND YOU ARE USING
+    private static final String IMAGE_DIRECTORY_2 = &quot;C:\\Users\\mamidinaveen.kumar\\Downloads\\products\\&quot;;
+    @Override
+    public Response saveProduct(ProductDTO productDTO, MultipartFile imageFile) {
+<span class="fc" id="L33">        Category category = categoryRepository.findById(productDTO.getCategoryId())</span>
+<span class="fc" id="L34">                .orElseThrow(() -&gt; new NotFoundException(&quot;Category Not Found&quot;));</span>
+        //map our dto to product entity
+<span class="fc" id="L36">        Product productToSave = Product.builder()</span>
+<span class="fc" id="L37">                .name(productDTO.getName())</span>
+<span class="fc" id="L38">                .sku(productDTO.getSku())</span>
+<span class="fc" id="L39">                .price(productDTO.getPrice())</span>
+<span class="fc" id="L40">                .stockQuantity(productDTO.getStockQuantity())</span>
+<span class="fc" id="L41">                .description(productDTO.getDescription())</span>
+<span class="fc" id="L42">                .category(category)</span>
+<span class="fc" id="L43">                .build();</span>
+
+<span class="pc bpc" id="L45" title="2 of 4 branches missed.">        if (imageFile != null &amp;&amp; !imageFile.isEmpty()) {</span>
+<span class="nc" id="L46">            log.info(&quot;Image file exist&quot;);</span>
+//            String imagePath = saveImage(imageFile); //use this when you haven't setup your frontend
+<span class="nc" id="L48">            String imagePath = saveImage2(imageFile); //use this when you ave set up your frontend locally but haven't deployed to produiction</span>
+
+<span class="nc" id="L50">            System.out.println(&quot;IMAGE URL IS: &quot; + imagePath);</span>
+<span class="nc" id="L51">            productToSave.setImageUrl(imagePath);</span>
+        }
+
+        //save the product entity
+<span class="fc" id="L55">        productRepository.save(productToSave);</span>
+
+<span class="fc" id="L57">        return Response.builder()</span>
+<span class="fc" id="L58">                .status(200)</span>
+<span class="fc" id="L59">                .message(&quot;Product successfully saved&quot;)</span>
+<span class="fc" id="L60">                .build();</span>
+    }
+
+    @Override
+    public Response updateProduct(ProductDTO productDTO, MultipartFile imageFile) {
+
+        //check if product exisit
+<span class="fc" id="L67">        Product existingProduct = productRepository.findById(productDTO.getProductId())</span>
+<span class="fc" id="L68">                .orElseThrow(() -&gt; new NotFoundException(&quot;Product Not Found&quot;));</span>
+
+        //check if image is associated with the product to update and upload
+<span class="pc bpc" id="L71" title="2 of 4 branches missed.">        if (imageFile != null &amp;&amp; !imageFile.isEmpty()) {</span>
+//            String imagePath = saveImage(imageFile); //use this when you haven't setup your frontend
+<span class="nc" id="L73">            String imagePath = saveImage2(imageFile); //use this when you ave set up your frontend locally but haven't deployed to produiction</span>
+
+<span class="nc" id="L75">            System.out.println(&quot;IMAGE URL IS: &quot; + imagePath);</span>
+<span class="nc" id="L76">            existingProduct.setImageUrl(imagePath);</span>
+        }
+
+        //check if category is to be chanegd for the products
+<span class="pc bpc" id="L80" title="2 of 4 branches missed.">        if (productDTO.getCategoryId() != null &amp;&amp; productDTO.getCategoryId() &gt; 0) {</span>
+<span class="fc" id="L81">            Category category = categoryRepository.findById(productDTO.getCategoryId())</span>
+<span class="pc" id="L82">                    .orElseThrow(() -&gt; new NotFoundException(&quot;Category Not Found&quot;));</span>
+<span class="fc" id="L83">            existingProduct.setCategory(category);</span>
+        }
+
+        //check if product fields is to be changed and update
+<span class="pc bpc" id="L87" title="2 of 4 branches missed.">        if (productDTO.getName() != null &amp;&amp; !productDTO.getName().isBlank()) {</span>
+<span class="fc" id="L88">            existingProduct.setName(productDTO.getName());</span>
+        }
+
+<span class="pc bpc" id="L91" title="2 of 4 branches missed.">        if (productDTO.getSku() != null &amp;&amp; !productDTO.getSku().isBlank()) {</span>
+<span class="fc" id="L92">            existingProduct.setSku(productDTO.getSku());</span>
+        }
+
+<span class="pc bpc" id="L95" title="2 of 4 branches missed.">        if (productDTO.getDescription() != null &amp;&amp; !productDTO.getDescription().isBlank()) {</span>
+<span class="fc" id="L96">            existingProduct.setDescription(productDTO.getDescription());</span>
+        }
+
+<span class="pc bpc" id="L99" title="2 of 4 branches missed.">        if (productDTO.getPrice() != null &amp;&amp; productDTO.getPrice().compareTo(BigDecimal.ZERO) &gt;= 0) {</span>
+<span class="fc" id="L100">            existingProduct.setPrice(productDTO.getPrice());</span>
+        }
+
+<span class="pc bpc" id="L103" title="2 of 4 branches missed.">        if (productDTO.getStockQuantity() != null &amp;&amp; productDTO.getStockQuantity() &gt;= 0) {</span>
+<span class="fc" id="L104">            existingProduct.setStockQuantity(productDTO.getStockQuantity());</span>
+        }
+        //update the product
+<span class="fc" id="L107">        productRepository.save(existingProduct);</span>
+
+        //Build our response
+<span class="fc" id="L110">        return Response.builder()</span>
+<span class="fc" id="L111">                .status(200)</span>
+<span class="fc" id="L112">                .message(&quot;Product Updated successfully&quot;)</span>
+<span class="fc" id="L113">                .build();</span>
+
+
+    }
+
+    @Override
+    public Response getAllProducts() {
+
+<span class="fc" id="L121">        List&lt;Product&gt; productList = productRepository.findAll(Sort.by(Sort.Direction.DESC, &quot;id&quot;));</span>
+
+<span class="fc" id="L123">        List&lt;ProductDTO&gt; productDTOList = modelMapper.map(productList, new TypeToken&lt;List&lt;ProductDTO&gt;&gt;() {</span>
+<span class="fc" id="L124">        }.getType());</span>
+
+<span class="fc" id="L126">        return Response.builder()</span>
+<span class="fc" id="L127">                .status(200)</span>
+<span class="fc" id="L128">                .message(&quot;success&quot;)</span>
+<span class="fc" id="L129">                .products(productDTOList)</span>
+<span class="fc" id="L130">                .build();</span>
+    }
+
+    @Override
+    public Response getProductById(Long id) {
+
+<span class="fc" id="L136">        Product product = productRepository.findById(id)</span>
+<span class="fc" id="L137">                .orElseThrow(() -&gt; new NotFoundException(&quot;Product Not Found&quot;));</span>
+
+<span class="fc" id="L139">        return Response.builder()</span>
+<span class="fc" id="L140">                .status(200)</span>
+<span class="fc" id="L141">                .message(&quot;success&quot;)</span>
+<span class="fc" id="L142">                .product(modelMapper.map(product, ProductDTO.class))</span>
+<span class="fc" id="L143">                .build();</span>
+    }
+
+    @Override
+    public Response deleteProduct(Long id) {
+
+<span class="fc" id="L149">        productRepository.findById(id)</span>
+<span class="fc" id="L150">                .orElseThrow(() -&gt; new NotFoundException(&quot;Product Not Found&quot;));</span>
+
+<span class="fc" id="L152">        productRepository.deleteById(id);</span>
+
+<span class="fc" id="L154">        return Response.builder()</span>
+<span class="fc" id="L155">                .status(200)</span>
+<span class="fc" id="L156">                .message(&quot;Product Deleted successfully&quot;)</span>
+<span class="fc" id="L157">                .build();</span>
+    }
+
+    @Override
+    public Response searchProduct(String input) {
+
+<span class="fc" id="L163">        List&lt;Product&gt; products = productRepository.findByNameContainingOrDescriptionContaining(input, input);</span>
+
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        if (products.isEmpty()) {</span>
+<span class="fc" id="L166">            throw new NotFoundException(&quot;Product Not Found&quot;);</span>
+        }
+
+<span class="fc" id="L169">        List&lt;ProductDTO&gt; productDTOList = modelMapper.map(products, new TypeToken&lt;List&lt;ProductDTO&gt;&gt;() {</span>
+<span class="fc" id="L170">        }.getType());</span>
+
+<span class="fc" id="L172">        return Response.builder()</span>
+<span class="fc" id="L173">                .status(200)</span>
+<span class="fc" id="L174">                .message(&quot;success&quot;)</span>
+<span class="fc" id="L175">                .products(productDTOList)</span>
+<span class="fc" id="L176">                .build();</span>
+    }
+
+
+    //this save to the root of your project
+    private String saveImage(MultipartFile imageFile) {
+        //validate image and check if it is greater than 1GIB
+<span class="nc bnc" id="L183" title="All 4 branches missed.">        if (!imageFile.getContentType().startsWith(&quot;image/&quot;) || imageFile.getSize() &gt; 1024 * 1024 * 1024) {</span>
+<span class="nc" id="L184">            throw new IllegalArgumentException(&quot;Only image files under 1GIG is allowed&quot;);</span>
+        }
+
+        //create the directory if it doesn't exist
+<span class="nc" id="L188">        File directory = new File(IMAGE_DIRECTORY);</span>
+
+<span class="nc bnc" id="L190" title="All 2 branches missed.">        if (!directory.exists()) {</span>
+<span class="nc" id="L191">            directory.mkdir();</span>
+<span class="nc" id="L192">            log.info(&quot;Directory was created&quot;);</span>
+        }
+        //generate unique file name for the image
+<span class="nc" id="L195">        String uniqueFileName = UUID.randomUUID() + &quot;_&quot; + imageFile.getOriginalFilename();</span>
+
+        //Get the absolute path of the image
+<span class="nc" id="L198">        String imagePath = IMAGE_DIRECTORY + uniqueFileName;</span>
+
+        try {
+<span class="nc" id="L201">            File destinationFile = new File(imagePath);</span>
+<span class="nc" id="L202">            imageFile.transferTo(destinationFile); //we are writing the image to this folder</span>
+<span class="nc" id="L203">        } catch (Exception e) {</span>
+<span class="nc" id="L204">            throw new IllegalArgumentException(&quot;Error saving Image: &quot; + e.getMessage());</span>
+<span class="nc" id="L205">        }</span>
+<span class="nc" id="L206">        return imagePath;</span>
+
+    }
+
+    //This saved image to the public folder in your frontend
+    //Use this if your have setup your frontend
+    private String saveImage2(MultipartFile imageFile) {
+        //validate image and check if it is greater than 1GIB
+<span class="nc bnc" id="L214" title="All 4 branches missed.">        if (!imageFile.getContentType().startsWith(&quot;image/&quot;) || imageFile.getSize() &gt; 1024 * 1024 * 1024) {</span>
+<span class="nc" id="L215">            throw new IllegalArgumentException(&quot;Only image files under 1GIG is allowed&quot;);</span>
+        }
+        //create the directory if it doesn't exist
+<span class="nc" id="L218">        File directory = new File(IMAGE_DIRECTORY_2);</span>
+
+<span class="nc bnc" id="L220" title="All 2 branches missed.">        if (!directory.exists()) {</span>
+<span class="nc" id="L221">            directory.mkdir();</span>
+<span class="nc" id="L222">            log.info(&quot;Directory was created&quot;);</span>
+        }
+        //generate unique file name for the image
+<span class="nc" id="L225">        String uniqueFileName = UUID.randomUUID() + &quot;_&quot; + imageFile.getOriginalFilename();</span>
+
+        //Get the absolute path of the image
+<span class="nc" id="L228">        String imagePath = IMAGE_DIRECTORY_2 + uniqueFileName;</span>
+
+        try {
+<span class="nc" id="L231">            File destinationFile = new File(imagePath);</span>
+<span class="nc" id="L232">            imageFile.transferTo(destinationFile); //we are writing the image to this folder</span>
+<span class="nc" id="L233">        } catch (Exception e) {</span>
+<span class="nc" id="L234">            throw new IllegalArgumentException(&quot;Error saving Image: &quot; + e.getMessage());</span>
+<span class="nc" id="L235">        }</span>
+<span class="nc" id="L236">        return &quot;products/&quot;+uniqueFileName;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

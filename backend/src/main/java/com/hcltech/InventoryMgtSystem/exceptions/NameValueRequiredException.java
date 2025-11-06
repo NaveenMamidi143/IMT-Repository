@@ -1,0 +1,7 @@
+package com.hcltech.InventoryMgtSystem.exceptions;
+
+public class NameValueRequiredException extends RuntimeException {
+    public NameValueRequiredException(String message) {
+        super(message);
+    }
+}

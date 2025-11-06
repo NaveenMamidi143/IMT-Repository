@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">InventoryMgtSystem</a> &gt; <a href="index.source.html" class="el_package">com.hcltech.InventoryMgtSystem.specification</a> &gt; <span class="el_source">TransactionFilter.java</span></div><h1>TransactionFilter.java</h1><pre class="source lang-java linenums">package com.hcltech.InventoryMgtSystem.specification;
+import com.hcltech.InventoryMgtSystem.models.Transaction;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+import java.util.ArrayList;
+import java.util.List;
+//Specification is used in Filtering data in a database
+<span class="nc" id="L10">public class TransactionFilter {</span>
+
+
+    public static Specification&lt;Transaction&gt; byFilter(String searchValue) {
+<span class="fc" id="L14">        return (root, query, criteriaBuilder) -&gt; {</span>
+            // If filter is null or empty, return true for all transactions
+<span class="pc bpc" id="L16" title="3 of 4 branches missed.">            if (searchValue == null || searchValue.isEmpty()) {</span>
+<span class="fc" id="L17">                return criteriaBuilder.conjunction(); // Always true</span>
+            }
+
+<span class="nc" id="L20">            String searchPattern = &quot;%&quot; + searchValue.toLowerCase() + &quot;%&quot;;</span>
+
+            // Create a list to hold all predicates
+<span class="nc" id="L23">            List&lt;Predicate&gt; predicates = new ArrayList&lt;&gt;();</span>
+
+            // Check transactions fields
+<span class="nc" id="L26">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(&quot;description&quot;)), searchPattern));</span>
+<span class="nc" id="L27">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(&quot;note&quot;)), searchPattern));</span>
+<span class="nc" id="L28">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(&quot;status&quot;).as(String.class)), searchPattern));</span>
+<span class="nc" id="L29">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(&quot;transactionType&quot;).as(String.class)), searchPattern));</span>
+
+            // Safely join and check user fields using LEFT JOIN
+<span class="nc bnc" id="L32" title="All 2 branches missed.">            if (root.getJoins().stream().noneMatch(j -&gt; j.getAttribute().getName().equals(&quot;user&quot;))) {</span>
+<span class="nc" id="L33">                root.join(&quot;user&quot;, JoinType.LEFT);</span>
+            }
+<span class="nc" id="L35">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join(&quot;user&quot;, JoinType.LEFT).get(&quot;name&quot;)), searchPattern));</span>
+<span class="nc" id="L36">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join(&quot;user&quot;, JoinType.LEFT).get(&quot;email&quot;)), searchPattern));</span>
+<span class="nc" id="L37">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join(&quot;user&quot;, JoinType.LEFT).get(&quot;phoneNumber&quot;)), searchPattern));</span>
+
+            // Safely join and check supplier fields using LEFT JOIN
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            if (root.getJoins().stream().noneMatch(j -&gt; j.getAttribute().getName().equals(&quot;supplier&quot;))) {</span>
+<span class="nc" id="L41">                root.join(&quot;supplier&quot;, JoinType.LEFT);</span>
+            }
+<span class="nc" id="L43">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join(&quot;supplier&quot;, JoinType.LEFT).get(&quot;name&quot;)), searchPattern));</span>
+<span class="nc" id="L44">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join(&quot;supplier&quot;, JoinType.LEFT).get(&quot;contactInfo&quot;)), searchPattern));</span>
+
+            // Safely join and check product fields using LEFT JOIN
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            if (root.getJoins().stream().noneMatch(j -&gt; j.getAttribute().getName().equals(&quot;product&quot;))) {</span>
+<span class="nc" id="L48">                root.join(&quot;product&quot;, JoinType.LEFT);</span>
+            }
+
+<span class="nc" id="L51">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join(&quot;product&quot;, JoinType.LEFT).get(&quot;name&quot;)), searchPattern));</span>
+<span class="nc" id="L52">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join(&quot;product&quot;, JoinType.LEFT).get(&quot;sku&quot;)), searchPattern));</span>
+<span class="nc" id="L53">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join(&quot;product&quot;, JoinType.LEFT).get(&quot;description&quot;)), searchPattern));</span>
+
+            // Safely join product category using LEFT JOIN
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            if (root.getJoins().stream().noneMatch(j -&gt; j.getAttribute().getName().equals(&quot;product&quot;)) &amp;&amp;</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">                    root.join(&quot;product&quot;).getJoins().stream().noneMatch(j -&gt; j.getAttribute().getName().equals(&quot;category&quot;))) {</span>
+<span class="nc" id="L58">                root.join(&quot;product&quot;, JoinType.LEFT).join(&quot;category&quot;, JoinType.LEFT);</span>
+            }
+<span class="nc" id="L60">            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join(&quot;product&quot;, JoinType.LEFT)</span>
+<span class="nc" id="L61">                    .join(&quot;category&quot;, JoinType.LEFT).get(&quot;name&quot;)), searchPattern));</span>
+
+            // Combine all predicates with OR
+<span class="nc" id="L64">            return criteriaBuilder.or(predicates.toArray(new Predicate[0]));</span>
+        };
+    }
+
+
+    // New method for filtering transactions by month and year
+    public static Specification&lt;Transaction&gt; byMonthAndYear(int month, int year) {
+<span class="fc" id="L71">        return (root, query, criteriaBuilder) -&gt; {</span>
+            // Use the month and year functions on the createdAt date field
+<span class="fc" id="L73">            Expression&lt;Integer&gt; monthExpression = criteriaBuilder.function(&quot;month&quot;, Integer.class, root.get(&quot;createdAt&quot;));</span>
+<span class="fc" id="L74">            Expression&lt;Integer&gt; yearExpression = criteriaBuilder.function(&quot;year&quot;, Integer.class, root.get(&quot;createdAt&quot;));</span>
+
+            // Create predicates for the month and year
+<span class="fc" id="L77">            Predicate monthPredicate = criteriaBuilder.equal(monthExpression, month);</span>
+<span class="fc" id="L78">            Predicate yearPredicate = criteriaBuilder.equal(yearExpression, year);</span>
+
+            // Combine the month and year predicates
+<span class="fc" id="L81">            return criteriaBuilder.and(monthPredicate, yearPredicate);</span>
+        };
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

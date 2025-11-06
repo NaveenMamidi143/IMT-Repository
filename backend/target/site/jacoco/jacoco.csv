@@ -1,0 +1,42 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.config,ModelMapperConfig,0,18,0,0,0,7,0,2,0,2
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.controllers,UserController,0,35,0,0,0,6,0,6,0,6
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.controllers,CategoryController,0,30,0,0,0,5,0,5,0,5
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.controllers,SupplierController,0,30,0,0,0,5,0,5,0,5
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.controllers,TransactionController,0,50,0,0,0,8,0,7,0,7
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.controllers,ProductController,0,84,0,0,0,21,0,6,0,6
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.controllers,AuthController,0,12,0,0,0,2,0,2,0,2
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.specification,TransactionFilter,284,55,13,1,27,9,13,4,6,4
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.security,AuthFilter,0,79,2,8,0,20,2,6,0,3
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.security,JwtUtils,0,85,1,3,0,16,1,9,0,8
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.security,SecurityConfig,0,61,0,0,0,14,0,7,0,7
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.security,CorsConfigTest,0,8,0,0,0,2,0,2,0,2
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.security,CorsConfigTest.new WebMvcConfigurer() {...},0,34,0,0,0,5,0,2,0,2
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.security,CustomUserDetailsService,0,18,0,0,0,5,0,2,0,2
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.security,AuthUser,25,0,0,0,7,0,7,0,7,0
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.exceptions,NotFoundException,0,4,0,0,0,2,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.exceptions,CustomAuthenticationEntryPoint,0,24,0,0,0,8,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.exceptions,CustomAccessDenialHandler,0,24,0,0,0,8,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.exceptions,GlobalExceptionHandler,0,63,0,0,0,21,0,5,0,5
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.exceptions,InvalidCredentialsException,0,4,0,0,0,2,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.exceptions,NameValueRequiredException,0,4,0,0,0,2,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.models,User,0,18,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.models,Category,0,6,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.models,Product,0,23,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.models,Transaction,0,25,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,ProductServiceImpl.new TypeToken() {...},0,3,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,ProductServiceImpl.new TypeToken() {...},0,3,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,SupplierServiceImpl,0,153,3,3,0,40,3,9,0,9
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,UserServiceImpl,10,306,7,9,0,79,9,16,2,15
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,ProductServiceImpl,146,283,28,18,35,72,25,12,3,11
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,TransactionServiceImpl,40,401,1,3,0,124,8,11,7,10
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,CategoryServiceImpl,0,143,0,0,0,39,0,10,0,10
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,CategoryServiceImpl.new TypeToken() {...},0,3,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,SupplierServiceImpl.new TypeToken() {...},0,3,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,TransactionServiceImpl.new TypeToken() {...},0,3,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,TransactionServiceImpl.new TypeToken() {...},0,3,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.services.impl,UserServiceImpl.new TypeToken() {...},0,3,0,0,0,1,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem,InventoryMgtSystemApplication,5,3,0,0,2,1,1,1,1,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.enums,TransactionType,0,21,0,0,0,2,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.enums,UserRole,0,15,0,0,0,2,0,1,0,1
+InventoryMgtSystem,com.hcltech.InventoryMgtSystem.enums,TransactionStatus,0,27,0,0,0,2,0,1,0,1
